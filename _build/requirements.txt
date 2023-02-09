@@ -4,10 +4,12 @@ ansible-runner>=2.3.1
 ansible-core
 dumb-init
 
+cryptography>=39.0.0
+
 ncclient
 paramiko
 pykerberos
-pyOpenSSL
+pyOpenSSL>=23.0.0
 pypsrp[kerberos,credssp]
 pywinrm[kerberos,credssp]
 toml
@@ -17,4 +19,4 @@ pyyaml
 six
 
 redis
-boto3
+boto3[crt]
