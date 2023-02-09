@@ -16,3 +16,6 @@ collections:
   - name: ansible.posix
   - name: ansible.windows
   - name: redhatinsights.insights
+  - name: community.general
+  - name: community.docker
+  - name: amazon.aws
