@@ -1,6 +1,6 @@
 # AWX EE
 
-The default Execution Environment for AWX.
+The InfluxData Execution Environment for AWX.
 
 ## Build the image locally
 
@@ -11,3 +11,8 @@ Then run the following command from the root of this repo:
 ```bash
 $ ansible-builder build -v3 -t quay.io/ansible/awx-ee # --container-runtime=docker # Is podman by default
 ```
+
+## Build the image via CI
+
+The Github actions configuration in this repository should work for you as well, provided that you're using that platform. Just updates the secrets to reflect your chosen container repository.
+
