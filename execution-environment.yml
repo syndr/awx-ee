@@ -43,6 +43,12 @@ dependencies:
     unzip [platform:rpm]
     jq [platform:rpm]
     openssl [platform:rpm]
+    podman-remote [platform:rpm]
+    cmake [platform:rpm compile]
+    gcc [platform:rpm compile]
+    gcc-c++ [platform:rpm compile]
+    make [platform:rpm compile]
+    openssl-devel [platform:rpm compile]
   python: |
     git+https://github.com/ansible/ansible-sign
     ncclient
@@ -59,6 +65,7 @@ dependencies:
     cryptography>=39.0.0
     redis
     boto3[crt]
+    receptorctl
 additional_build_steps:
   append_base:
     - RUN $PYCMD -m pip install -U pip
