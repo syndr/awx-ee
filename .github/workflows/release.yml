@@ -7,32 +7,32 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Release
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox
+          pip install -r requirements.txt
 
-      - name: Build image
-        env:
-          DOCKER_BUILDKIT: 1
+      - name: Quay login
         run: |
-          tox -e docker -- --tag=quay.io/ansible/awx-ee:${{ github.event.release.tag_name }}
+          echo "${{ secrets.QUAY_TOKEN }}" | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
 
-      - name: Apply latest tag
+      - name: Build and push image
         run: |
-         docker tag quay.io/ansible/awx-ee:${{ github.event.release.tag_name }} quay.io/ansible/awx-ee:latest
+          docker buildx create --name awx-ee-buildx
+          docker buildx use awx-ee-buildx
+          ansible-builder create -v3 --output-file=Dockerfile
+          docker buildx build \
+            --push \
+            --platform=linux/amd64 \
+            --tag=${{ vars.IMAGE_REGISTRY }}:${{ github.event.release.tag_name }} \
+            context
 
-      - name: Push images
-        run: |
-         echo "${{ secrets.QUAY_TOKEN }}" | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
-         docker push quay.io/ansible/awx-ee:${{ github.event.release.tag_name }}
-         docker push quay.io/ansible/awx-ee:latest

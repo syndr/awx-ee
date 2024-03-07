@@ -13,20 +13,11 @@ dependencies:
     ---
     collections:
       - name: awx.awx
-      - name: azure.azcollection
       - name: amazon.aws
-      - name: theforeman.foreman
-      - name: google.cloud
-      - name: openstack.cloud
-      - name: community.vmware
-      - name: ovirt.ovirt
-      - name: kubernetes.core
       - name: ansible.posix
-      - name: ansible.windows
-      - name: redhatinsights.insights
       - name: community.general
       - name: community.docker
-      - name: amazon.aws
+      - name: community.aws
   system: |
     git-core [platform:rpm]
     python3.9-devel [platform:rpm compile]
@@ -66,6 +57,7 @@ dependencies:
     redis
     boto3[crt]
     receptorctl
+    netaddr
 additional_build_steps:
   append_base:
     - RUN $PYCMD -m pip install -U pip

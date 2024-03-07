@@ -4,48 +4,45 @@ name: CI
 
 on:
   pull_request:
-    branches: [devel]
-
-  push:
-    branches: [devel]
+    branches:
+      - main
 
 jobs:
   podman:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Podman
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox
+          pip install -r requirements.txt
 
       - name: Build EE with Podman
         run: |
-          tox -e podman
+          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY }}:latest --container-runtime=podman
 
   docker:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Docker
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox
+          pip install -r requirements.txt
 
       - name: Build EE with Docker
-        env:
-          DOCKER_BUILDKIT: 1
         run: |
-          tox -e docker
+          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY }}:latest --container-runtime=docker
+
