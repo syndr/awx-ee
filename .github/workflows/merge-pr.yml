@@ -1,0 +1,75 @@
+name: "Create Tag on Pull Request merge"
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  TagMerge:
+    name: Tag on Pull Request merge
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Generate Tag
+        id: tagged
+        run: |
+          echo $(curl \
+            --silent \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
+            "https://api.github.com/repos/${{ github.repository }}/tags" \
+            | jq -r '.[].name |= sub("-rc0|v"; "";"g") | select(length > 1) | max_by(.name) | .name' \
+            | awk '
+            function inc(s){
+              split(s, a, ".")
+              a[3]++
+              if (a[3]>=10){
+                a[2]++;a[3]=0
+              }
+              if (a[2]>=10){
+                a[1]++;a[2]=0
+              }
+              return a[1]"."a[2]"."a[3]
+
+            }
+            { print "newtag="inc($1) }') >> $GITHUB_OUTPUT
+
+      - name: Create new tag in github
+        id: createtag
+        run: |
+          echo tag_sha=$(curl \
+            --silent \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
+            "https://api.github.com/repos/${{ github.repository }}/git/tags" \
+            -d '{"tag":"v${{ steps.tagged.outputs.newtag }}","message":"New release from github actions","object":"${{ github.sha }}","type":"commit"}' \
+            | jq -r '.sha') >> $GITHUB_OUTPUT
+
+      - name: Create ref tag in github
+        id: createreftag
+        run: |
+          curl \
+            --silent \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
+            "https://api.github.com/repos/${{ github.repository }}/git/refs" \
+            -d '{"ref": "refs/tags/v${{ steps.tagged.outputs.newtag }}",  "sha": "${{ steps.createtag.outputs.tag_sha}}" }'
+
+      - name: Add PR comment with new tag info
+        run: |
+          curl \
+            --silent \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
+            "${{ github.event.pull_request._links.comments.href }}" \
+            -d '{"body":"Created tag v${{ steps.tagged.outputs.newtag }}"}'
