@@ -61,6 +61,7 @@ dependencies:
     boto3[crt]
     receptorctl
     netaddr
+    ara
 additional_build_steps:
   append_base:
     - RUN $PYCMD -m pip install -U pip
