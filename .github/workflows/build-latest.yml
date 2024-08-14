@@ -5,6 +5,8 @@ on:
     # build and push anytime commits are merged to main
     branches:
       - main
+    paths:
+      - '!**/*.md'
 
 jobs:
   build_and_push_latest:
@@ -22,9 +24,12 @@ jobs:
           python -m pip install --upgrade pip setuptools
           pip install -r requirements.txt
 
-      - name: Quay login
-        run: |
-          echo "${{ secrets.QUAY_TOKEN }}" | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
         run: |

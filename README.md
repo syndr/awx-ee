@@ -1,6 +1,19 @@
 # AWX EE
 
-The InfluxData Execution Environment for AWX.
+An Execution Environment for AWX.
+
+Main features:
+- Centos Stream 9
+- Python 3.12
+  - ara
+  - boto3
+  - mitogen
+  - redis
+  - toml
+- Ansible 2.16
+- Minimal base collections installed
+
+View the full configuration in the [execution-environment.yaml](execution-environment.yaml) file.
 
 ## Build the image locally
 
