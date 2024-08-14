@@ -8,7 +8,9 @@ Main features:
   - ara
   - boto3
   - mitogen
-- Ansible 2.17
+  - redis
+  - toml
+- Ansible 2.16
 - Minimal base collections installed
 
 View the full configuration in the [execution-environment.yaml](execution-environment.yaml) file.
