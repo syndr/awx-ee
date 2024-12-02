@@ -9,6 +9,7 @@ on:
       - main
       - devel
     paths:
+      - ".github/workflows/release.yml"
       - "./**"
       - '!**/*.md'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - main
       - devel
     paths:
+      - ".github/workflows/release.yml"
       - "./**"
       - '!**/*.md'
   release:
