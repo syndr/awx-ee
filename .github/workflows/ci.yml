@@ -7,6 +7,7 @@ on:
     branches:
       - main
     paths:
+      - "./**"
       - '!**/*.md'
 
 jobs:
@@ -27,7 +28,7 @@ jobs:
 
       - name: Build EE with Podman
         run: |
-          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY }}:latest --container-runtime=podman
+          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY || 'ghcr.io' }}:latest --container-runtime=podman
 
   docker:
     runs-on: ubuntu-22.04
@@ -46,5 +47,5 @@ jobs:
 
       - name: Build EE with Docker
         run: |
-          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY }}:latest --container-runtime=docker
+          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY || 'ghcr.io' }}:latest --container-runtime=docker
 

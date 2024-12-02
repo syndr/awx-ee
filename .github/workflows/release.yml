@@ -1,3 +1,5 @@
+---
+
 name: Release
 
 on:
@@ -7,6 +9,7 @@ on:
       - main
       - devel
     paths:
+      - "./**"
       - '!**/*.md'
   pull_request:
     # build and push anytime a pull request is opened or synchronized
@@ -14,6 +17,7 @@ on:
       - main
       - devel
     paths:
+      - "./**"
       - '!**/*.md'
   release:
     # build and push anytime a release is created
