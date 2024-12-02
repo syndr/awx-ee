@@ -14,7 +14,7 @@ on:
 jobs:
   # Only run with podman, as the release job will run with docker
   podman:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Podman
     steps:
       - uses: actions/checkout@v4
