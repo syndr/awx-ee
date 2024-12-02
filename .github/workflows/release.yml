@@ -1,4 +1,27 @@
 ---
+# This workflow will build and push an AWX EE image to a container registry based upon the provided configuration
+#
+# Image tags will be generated based upon the event that triggered the workflow:
+#   - push event:
+#     - main branch: latest
+#     - devel branch: devel
+#     - all other branches: <branch name>-latest
+#       Branches must be added to the on.push.branches array above to trigger
+#   - pull_request event: DEV-PR-<pull_request_number>
+#     Branches must be added to the on.pull_request.branches array above to trigger
+#   - release event: <tag_name>
+#   - schedule event: nightly
+#     This will be the same configuration as the 'latest' tag, but may contain updated packages, etc. from upstream
+#   - all other events: <first 7 chars of commit sha>
+#
+# Variables:
+#   IMAGE_REGISTRY_URL: The container registry to push the image to (default: ghcr.io)
+#   IMAGE_REPOSITORY: The repository to push the image to (default: github.repository)
+#   IMAGE_REGISTRY_USER: The username to authenticate with the container registry (default: github.actor)
+#
+# Secrets:
+#   IMAGE_REGISTRY_TOKEN: The token to authenticate with the container registry (default: secrets.GITHUB_TOKEN)
+#
 
 name: Build & Release
 
@@ -49,7 +72,7 @@ jobs:
 
       - name: Build EE with Podman
         run: |
-          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY || 'ghcr.io' }}/${{ vars.IMAGE_REPOSITORY || github.repository }} --container-runtime=podman
+          ansible-builder build -v3 -t ${{ vars.IMAGE_REGISTRY_URL || 'ghcr.io' }}/${{ vars.IMAGE_REPOSITORY || github.repository }} --container-runtime=podman
 
   release:
     runs-on: ubuntu-latest
@@ -76,18 +99,6 @@ jobs:
           password: ${{ secrets.IMAGE_REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Generate image tag
-        # Generate the image tag based upon the following rules:
-        #   - push event:
-        #     - main branch: latest
-        #     - devel branch: devel
-        #     - all other branches: <branch name>-latest
-        #       Branches must be added to the on.push.branches array above to trigger
-        #   - pull_request event: DEV-PR-<pull_request_number>
-        #     Branches must be added to the on.pull_request.branches array above to trigger
-        #   - release event: <tag_name>
-        #   - schedule event: nightly
-        #     This will be the same configuration as the 'latest' tag, but may contain updated packages, etc. from upstream
-        #   - all other events: <first 7 chars of commit sha>
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
             if [[ "${{ github.ref_name }}" == "main" ]]; then
