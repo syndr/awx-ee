@@ -10,7 +10,7 @@ Main features:
   - mitogen
   - redis
   - toml
-- Ansible 2.16
+- Ansible 2.19
 - Minimal base collections installed
 
 View the full configuration in the [execution-environment.yaml](execution-environment.yaml) file.
@@ -22,7 +22,7 @@ First, [install ansible-builder](https://ansible-builder.readthedocs.io/en/stabl
 Then run the following command from the root of this repo:
 
 ```bash
-$ ansible-builder build -v3 -t quay.io/influxdb/awx-ee --container-runtime=docker # Uses podman by default
+$ ansible-builder build -v3 -t <your_repo>:<your_tag> --container-runtime=docker # Uses podman by default
 ```
 
 ## Build the image via CI
