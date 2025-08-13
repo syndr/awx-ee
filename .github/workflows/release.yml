@@ -51,6 +51,8 @@ on:
   schedule:
     # build and push nightly
     - cron: "13 4 * * *"
+  workflow_dispatch:
+
 
 jobs:
   ci:
@@ -100,7 +102,7 @@ jobs:
 
       - name: Generate image tag
         run: |
-          if [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "${{ github.event_name }}" == "push" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             if [[ "${{ github.ref_name }}" == "main" ]]; then
               echo "IMAGE_TAG=latest" >> $GITHUB_ENV
             elif [[ "${{ github.ref_name }}" == "devel" ]]; then
